@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="synchronizedClient:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/synchronizedClient_jar</output-path>
+    <root id="archive" name="synchronizedClient.jar">
+      <element id="module-output" name="synchronizedClient" />
+    </root>
+  </artifact>
+</component>
