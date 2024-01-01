@@ -17,23 +17,26 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
 import syncClient.Client;
 
 public class formClient extends JFrame {
     Client client;
-    public String getFolderPath()
-    {
+
+    public String getFolderPath() {
         return selectedFolderPath;
     }
+
     private static formClient instance;
 
-    public void setFormClient(formClient formClient)
-    {
+    public void setFormClient(formClient formClient) {
         instance = formClient;
     }
+
     public static formClient getInstance() {
         return instance;
     }
+
     private volatile static String selectedFolderPath = null;
 
     public formClient() {
@@ -44,27 +47,27 @@ public class formClient extends JFrame {
     public formClient(String message) {
         showMessage(message);
     }
-    public void connectToServer(String folderPath, String IpAddress, int port)
-    {
-        client =  new Client(IpAddress, port, folderPath);
+
+    public void connectToServer(String folderPath, String IpAddress, int port) {
+        client = new Client(IpAddress, port, folderPath);
         client.connect();
     }
-    public void startListenServer()
-    {
+
+    public void startListenServer() {
         client.startListener();
     }
-    public void requestSync()
-    {
+
+    public void requestSync() {
         JOptionPane.showMessageDialog(this,
 
-            "You must synchronize before working.",
+                "You must synchronize before working.",
 
-            "Important",
+                "Important",
 
-            JOptionPane.WARNING_MESSAGE);
+                JOptionPane.WARNING_MESSAGE);
         client.requestSyncFromServer();
 
-        setTableData(selectedFolderPath,"");
+        setTableData(selectedFolderPath, "");
     }
 
     public void showMessage(String message) {
@@ -76,6 +79,7 @@ public class formClient extends JFrame {
 
                 JOptionPane.INFORMATION_MESSAGE);
     }
+
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -108,7 +112,7 @@ public class formClient extends JFrame {
             @Override
 
             public void windowClosing(WindowEvent event) {
-                if(selectedFolderPath == null) System.exit(0);
+                if (selectedFolderPath == null) System.exit(0);
                 // Thực hiện hành động bạn muốn trước khi ứng dụng tắt
                 JOptionPane.showMessageDialog(Parent,
 
@@ -119,7 +123,7 @@ public class formClient extends JFrame {
                         JOptionPane.WARNING_MESSAGE);
 
                 client.SyncToServer();
-                setTableData(selectedFolderPath,"");
+                setTableData(selectedFolderPath, "");
                 client.messageClose();
                 final JOptionPane optionPane = new JOptionPane("Application will shut down in 10 seconds...",
 
@@ -204,6 +208,7 @@ public class formClient extends JFrame {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 txtSearchFocusGained(evt);
             }
+
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtSearchFocusLost(evt);
             }
@@ -361,13 +366,13 @@ public class formClient extends JFrame {
         firstPanel.setBackground(new java.awt.Color(240, 248, 240));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
-                new Object [][] {
+                new Object[][]{
                         {null, null, null, null},
                         {null, null, null, null},
                         {null, null, null, null},
                         {null, null, null, null}
                 },
-                new String [] {
+                new String[]{
                         "Title 1", "Title 2", "Title 3", "Title 4"
                 }
         ));
@@ -518,11 +523,9 @@ public class formClient extends JFrame {
             int result = fileChooser.showOpenDialog(frame);
             if (result == JFileChooser.APPROVE_OPTION) {
                 break;
-            }
-            else if (!txtPath.getText().equals("Select the path to sync folder")){
+            } else if (!txtPath.getText().equals("Select the path to sync folder")) {
                 return;
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(frame, "Error: Please choose Folder to Synchronize", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -601,25 +604,26 @@ public class formClient extends JFrame {
     }//GEN-LAST:event_btnBrowseMouseClicked
 
     private void btnEditFolderMouseClicked(MouseEvent evt) {
-        if (selectedFolderPath == null ) {
+        if (selectedFolderPath == null) {
             int option = JOptionPane.showOptionDialog(this,
                     "Folder was not selected.\nPlease select Folder to Synchronize",
                     "Error", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
 
             if (option == JOptionPane.OK_OPTION)
                 showFileChooser(this, txtPath);
-        }
-        else {
+        } else {
+            try {
+                File folder = new File(selectedFolderPath);
 
-                JFileChooser fileChooser = new JFileChooser();
-
-                fileChooser.setDialogTitle("Edit Folder");
-
-                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-                fileChooser.showOpenDialog(null);
-
-                setTableData(selectedFolderPath, "");
+                if (Desktop.isDesktopSupported()) {
+                    Desktop desktop = Desktop.getDesktop();
+                    if (desktop.isSupported(Desktop.Action.OPEN)) {
+                        desktop.open(folder);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -662,7 +666,6 @@ public class formClient extends JFrame {
     }//GEN-LAST:event_btnSelectFileMouseClicked
 
 
-
     private void btnAddFileMouseClicked(java.awt.event.MouseEvent evt) {
 // need fix duplicate case
         String sourceFilePath = txtFilename.getText(); // Đường dẫn tới tệp muốn thêm
@@ -678,7 +681,7 @@ public class formClient extends JFrame {
 
             String sourceFileName = sourcePath.getFileName().toString();
 
-            ArrayList<File> allFiles = new ArrayList<>(); ;
+            ArrayList<File> allFiles = new ArrayList<>();
 
             File folder = new File(selectedFolderPath);
             File[] listOfFiles = folder.listFiles();
@@ -715,7 +718,7 @@ public class formClient extends JFrame {
                 JOptionPane.showOptionDialog(this,
                         "FILE EXIST!!!",
                         "Error", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
-                return ;
+                return;
             }
 
             int option = JOptionPane.showConfirmDialog(this, "Confirm Add File.!", "INFORM", JOptionPane.ERROR_MESSAGE);
